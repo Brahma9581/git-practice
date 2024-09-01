@@ -1,0 +1,55 @@
+#!/bin/bash
+
+USERID=$(id -u)
+
+R="\e[31m"
+G="\e[32m"
+N="\e[0m"
+#echo "User id is: $USERID"
+CHECK_ROOT(){
+    if [ $USERID -ne 0 ]
+    then
+        echo "Please run the script with root privilages"
+        exit 1
+    fi
+}
+VALIDATE(){
+    if [ $1 -ne 0 ]
+    then
+        echo -e "$2 is $R failed $N."
+        exit 1
+    else
+        echo -e "$2 is $G success..$N"
+    fi
+}
+
+# if [ $USERID -ne 0 ]
+# then
+#     echo "please run the script with root privilages"
+#     exit 1
+# fi
+
+CHECK_ROOT
+
+dnf list installed git
+#VALIDATE $? "listing git"
+
+if [ $? -ne 0 ]
+then
+    echo "git is not installed. going to install it..."
+    dnf install git -y
+    VALIDATE $? "installing git"
+else
+    echo "git already installed, nothing to do it"
+fi
+
+dnf list installed mysql -y
+
+if [ $? -ne 0 ]
+then
+    echo "mysql is not instlled, going to install it..."
+    dnf install mysql -y
+    VALIDATE $? "installing MYSQL"
+else
+    echo "Mysql is already installed...nothing to do it"
+fi
